@@ -11,11 +11,35 @@ const TeamCard = ({ name, role, image, bio }) => {
         <h3>{name}</h3>
         <p className="team-role">{role}</p>
         <p className="team-bio">{bio}</p>
-        <div className="team-social">
-          <a href="#" className="social-icon">in</a>
-          <a href="#" className="social-icon">tw</a>
-          <a href="#" className="social-icon">gh</a>
-        </div>
+       <div className="team-social">
+  <a 
+    href="https://linkedin.com" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="social-icon"
+  >
+    in
+  </a>
+
+  <a 
+    href="https://twitter.com" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="social-icon"
+  >
+    tw
+  </a>
+
+  <a 
+    href="https://github.com" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="social-icon"
+  >
+    gh
+  </a>
+</div>
+
       </div>
     </div>
   );

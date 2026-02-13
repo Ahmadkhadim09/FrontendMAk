@@ -22,7 +22,6 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
     console.log('Form submitted:', formData);
     setSubmitted(true);
   };
@@ -50,6 +49,8 @@ const Contact = () => {
       <section className="contact-content">
         <div className="container">
           <div className="contact-grid">
+
+            {/* LEFT SIDE */}
             <div className="contact-info">
               <h2>Let's Work Together</h2>
               <p>
@@ -86,24 +87,60 @@ const Contact = () => {
               </div>
 
               <div className="social-links">
-                <a href="#" className="social-link">LinkedIn</a>
-                <a href="#" className="social-link">Twitter</a>
-                <a href="#" className="social-link">GitHub</a>
-                <a href="#" className="social-link">Dribbble</a>
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-link"
+                >
+                  LinkedIn
+                </a>
+
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-link"
+                >
+                  Twitter
+                </a>
+
+                <a
+                  href="https://github.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-link"
+                >
+                  GitHub
+                </a>
+
+                <a
+                  href="https://dribbble.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-link"
+                >
+                  Dribbble
+                </a>
               </div>
             </div>
 
+            {/* RIGHT SIDE */}
             <div className="contact-form-container">
               {submitted ? (
                 <div className="success-message">
                   <h3>Thank You!</h3>
                   <p>We've received your message and will get back to you soon.</p>
-                  <button onClick={() => setSubmitted(false)} className="btn btn-primary">
+                  <button
+                    onClick={() => setSubmitted(false)}
+                    className="btn btn-primary"
+                  >
                     Send Another Message
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="contact-form">
+
                   <div className="form-group">
                     <label htmlFor="name">Full Name *</label>
                     <input
@@ -167,7 +204,9 @@ const Contact = () => {
                     >
                       <option value="">Select a service</option>
                       {services.map((service, index) => (
-                        <option key={index} value={service}>{service}</option>
+                        <option key={index} value={service}>
+                          {service}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -182,15 +221,17 @@ const Contact = () => {
                       required
                       placeholder="Tell us about your project..."
                       rows="6"
-                    ></textarea>
+                    />
                   </div>
 
                   <button type="submit" className="btn btn-primary btn-full">
                     Send Message
                   </button>
+
                 </form>
               )}
             </div>
+
           </div>
         </div>
       </section>
