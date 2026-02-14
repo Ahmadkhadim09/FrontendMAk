@@ -8,26 +8,31 @@ import About from './pages/About';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
 import Portfolio from './pages/Portfolio';
+import NotFound from './pages/NotFound';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Home />} />
-            <Route path="about" element={<About />} />
-            <Route path="services" element={<Services />} />
-            <Route path="portfolio" element={<Portfolio />} />
-            <Route path="contact" element={<Contact />} />
-          </Route>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<div>Admin Dashboard</div>} />
-          </Route>
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Home />} />
+              <Route path="about" element={<About />} />
+              <Route path="services" element={<Services />} />
+              <Route path="portfolio" element={<Portfolio />} />
+              <Route path="contact" element={<Contact />} />
+            </Route>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<div>Admin Dashboard</div>} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

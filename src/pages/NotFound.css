@@ -1,0 +1,30 @@
+.not-found {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(135deg, #f8fafc, #ffffff);
+}
+
+.not-found h1 {
+  font-size: 8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.not-found h2 {
+  font-size: 2rem;
+  color: #0f172a;
+  margin-bottom: 20px;
+}
+
+.not-found p {
+  color: #64748b;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
