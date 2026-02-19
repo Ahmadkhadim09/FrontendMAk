@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import contactService from '../services/contactService';
 import './ContactForm.css';
 
 const ContactForm = () => {
@@ -14,21 +13,21 @@ const ContactForm = () => {
     newsletter: false
   });
 
-  const [formStatus, setFormStatus] = useState({
-    submitted: false,
-    success: false,
-    message: '',
-    errors: {}
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState({ 
+    submitted: false, 
+    success: false, 
+    message: '' 
   });
 
-  const [loading, setLoading] = useState(false);
+  const API_URL = 'https://makdevs-server.onrender.com/api';
 
   const projectTypes = [
-    'Web Application',
+    'Web Application', 
     'Mobile App', 
-    'E-commerce',
-    'AI/ML Solution',
-    'Cloud Migration',
+    'E-commerce', 
+    'AI/ML Solution', 
+    'Cloud Migration', 
     'Other'
   ];
 
@@ -54,157 +53,101 @@ const ContactForm = () => {
       ...formData,
       [e.target.name]: value
     });
-
-    // Clear field error when user starts typing
-    if (formStatus.errors[e.target.name]) {
-      setFormStatus({
-        ...formStatus,
-        errors: {
-          ...formStatus.errors,
-          [e.target.name]: null
-        }
-      });
-    }
-  };
-
-  const validateForm = () => {
-    const errors = {};
-
-    if (!formData.name.trim()) {
-      errors.name = 'Name is required';
-    } else if (formData.name.length < 2) {
-      errors.name = 'Name must be at least 2 characters';
-    }
-
-    if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
-    }
-
-    if (!formData.projectType) {
-      errors.projectType = 'Project type is required';
-    }
-
-    if (!formData.message.trim()) {
-      errors.message = 'Message is required';
-    } else if (formData.message.length < 10) {
-      errors.message = 'Message must be at least 10 characters';
-    }
-
-    return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('📝 Form submitted:', formData);
     
-    // Validate form
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      setFormStatus({
-        ...formStatus,
-        errors
-      });
-      return;
-    }
-
     setLoading(true);
-    setFormStatus({ ...formStatus, errors: {} });
-
+    
     try {
-      const response = await contactService.submitContact(formData);
+      console.log('📤 Sending to:', `${API_URL}/contact`);
       
-      setFormStatus({
+      const response = await fetch(`${API_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      console.log('📥 Response status:', response.status);
+      
+      const data = await response.json();
+      console.log('📥 Response data:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit');
+      }
+
+      setStatus({
         submitted: true,
         success: true,
-        message: response.message || 'Thank you! We\'ll contact you within 24 hours.',
-        errors: {}
+        message: 'Thank you! We\'ll contact you within 24 hours.'
       });
 
       // Reset form
       setFormData({
-        name: '',
-        email: '',
-        company: '',
-        projectType: '',
-        budget: '',
-        timeline: '',
-        message: '',
-        newsletter: false
+        name: '', email: '', company: '', projectType: '',
+        budget: '', timeline: '', message: '', newsletter: false
       });
 
-      // Auto-hide success message after 5 seconds
-      setTimeout(() => {
-        setFormStatus({
-          submitted: false,
-          success: false,
-          message: '',
-          errors: {}
-        });
-      }, 5000);
-
     } catch (error) {
-      console.error('Form submission error:', error);
-      
-      setFormStatus({
+      console.error('❌ Error:', error);
+      setStatus({
         submitted: true,
         success: false,
-        message: error.message || 'Something went wrong. Please try again.',
-        errors: {}
+        message: error.message || 'Something went wrong. Please try again.'
       });
     } finally {
       setLoading(false);
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setStatus({ submitted: false, success: false, message: '' });
+      }, 5000);
     }
   };
 
   return (
     <div className="contact-form-container">
-      {formStatus.submitted && (
-        <div className={`alert ${formStatus.success ? 'alert-success' : 'alert-error'}`}>
-          {formStatus.success ? '✅' : '❌'} {formStatus.message}
+      {status.submitted && (
+        <div className={`alert ${status.success ? 'alert-success' : 'alert-error'}`}>
+          {status.success ? '✅' : '❌'} {status.message}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="contact-form" noValidate>
+      <form onSubmit={handleSubmit} className="contact-form">
         <h3>Send Us a Message</h3>
         
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="name">
-              Full Name <span className="required">*</span>
-            </label>
+            <label htmlFor="name">Full Name *</label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={formStatus.errors.name ? 'error' : ''}
+              required
               placeholder="John Doe"
               disabled={loading}
             />
-            {formStatus.errors.name && (
-              <span className="error-message">{formStatus.errors.name}</span>
-            )}
           </div>
           
           <div className="form-group">
-            <label htmlFor="email">
-              Email Address <span className="required">*</span>
-            </label>
+            <label htmlFor="email">Email *</label>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={formStatus.errors.email ? 'error' : ''}
+              required
               placeholder="john@example.com"
               disabled={loading}
             />
-            {formStatus.errors.email && (
-              <span className="error-message">{formStatus.errors.email}</span>
-            )}
           </div>
         </div>
 
@@ -216,32 +159,27 @@ const ContactForm = () => {
             name="company"
             value={formData.company}
             onChange={handleChange}
-            placeholder="Your Company Name (Optional)"
+            placeholder="Your Company (Optional)"
             disabled={loading}
           />
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="projectType">
-              Project Type <span className="required">*</span>
-            </label>
+            <label htmlFor="projectType">Project Type *</label>
             <select
               id="projectType"
               name="projectType"
               value={formData.projectType}
               onChange={handleChange}
-              className={formStatus.errors.projectType ? 'error' : ''}
+              required
               disabled={loading}
             >
-              <option value="">Select project type</option>
-              {projectTypes.map((type, index) => (
-                <option key={index} value={type}>{type}</option>
+              <option value="">Select type</option>
+              {projectTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
               ))}
             </select>
-            {formStatus.errors.projectType && (
-              <span className="error-message">{formStatus.errors.projectType}</span>
-            )}
           </div>
           
           <div className="form-group">
@@ -254,8 +192,8 @@ const ContactForm = () => {
               disabled={loading}
             >
               <option value="">Select budget (Optional)</option>
-              {budgetRanges.map((range, index) => (
-                <option key={index} value={range}>{range}</option>
+              {budgetRanges.map(range => (
+                <option key={range} value={range}>{range}</option>
               ))}
             </select>
           </div>
@@ -271,32 +209,24 @@ const ContactForm = () => {
             disabled={loading}
           >
             <option value="">Select timeline (Optional)</option>
-            {timelineOptions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
+            {timelineOptions.map(option => (
+              <option key={option} value={option}>{option}</option>
             ))}
           </select>
         </div>
 
         <div className="form-group">
-          <label htmlFor="message">
-            Project Details <span className="required">*</span>
-          </label>
+          <label htmlFor="message">Message *</label>
           <textarea
             id="message"
             name="message"
             value={formData.message}
             onChange={handleChange}
-            className={formStatus.errors.message ? 'error' : ''}
-            placeholder="Tell us about your project, goals, and requirements..."
-            rows="5"
+            required
+            placeholder="Tell us about your project..."
+            rows="4"
             disabled={loading}
           />
-          {formStatus.errors.message && (
-            <span className="error-message">{formStatus.errors.message}</span>
-          )}
-          <small className="hint">
-            {formData.message.length}/2000 characters
-          </small>
         </div>
 
         <div className="form-group checkbox-group">
@@ -308,9 +238,7 @@ const ContactForm = () => {
               onChange={handleChange}
               disabled={loading}
             />
-            <span>
-              Subscribe to our newsletter for tech insights and updates
-            </span>
+            <span>Subscribe to our newsletter</span>
           </label>
         </div>
 
@@ -321,10 +249,6 @@ const ContactForm = () => {
         >
           {loading ? 'Sending...' : 'Send Message'}
         </button>
-
-        <p className="form-note">
-          <span className="required">*</span> Required fields
-        </p>
       </form>
     </div>
   );
