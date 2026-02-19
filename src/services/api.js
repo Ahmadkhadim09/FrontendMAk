@@ -82,7 +82,7 @@ class ApiService {
     return this.request(endpoint, { method: 'DELETE' });
   }
 
-  // File upload (for images)
+  // File upload (for single file)
   uploadFile(endpoint, file, fieldName = 'file') {
     const formData = new FormData();
     formData.append(fieldName, file);
