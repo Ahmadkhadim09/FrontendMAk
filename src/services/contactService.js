@@ -1,31 +1,65 @@
-import apiService from './api';
-import { API_ENDPOINTS } from '../config/api';
-
 class ContactService {
   async submitContact(formData) {
-    return apiService.post(API_ENDPOINTS.CONTACT, formData);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit contact form');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in contactService:', error);
+      throw error;
+    }
   }
 
   async getAllContacts(page = 1, status = '') {
-    const queryParams = new URLSearchParams({
-      page,
-      ...(status && { status })
-    }).toString();
+    try {
+      const queryParams = new URLSearchParams({
+        page,
+        ...(status && { status })
+      }).toString();
 
-    return apiService.get(`${API_ENDPOINTS.CONTACT}?${queryParams}`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/contact?${queryParams}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch contacts');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error in contactService:', error);
+      throw error;
+    }
   }
 
   async getContact(id) {
-    return apiService.get(`${API_ENDPOINTS.CONTACT}/${id}`);
-  }
-
-  async updateContact(id, data) {
-    return apiService.patch(`${API_ENDPOINTS.CONTACT}/${id}`, data);
-  }
-
-  async deleteContact(id) {
-    return apiService.delete(`${API_ENDPOINTS.CONTACT}/${id}`);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/contact/${id}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch contact');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error in contactService:', error);
+      throw error;
+    }
   }
 }
 
-export default new ContactService();
+// Create and export instance
+const contactService = new ContactService();
+export default contactService;

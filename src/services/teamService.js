@@ -1,39 +1,41 @@
-import apiService from './api';
-import { API_ENDPOINTS } from '../config/api';
-
 class TeamService {
   async getAllTeamMembers(featured = false) {
-    const queryParams = new URLSearchParams({
-      ...(featured && { featured: true })
-    }).toString();
+    try {
+      const queryParams = new URLSearchParams({
+        ...(featured && { featured: true })
+      }).toString();
 
-    const response = await apiService.get(`${API_ENDPOINTS.TEAM}?${queryParams}`);
-    return response;
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/team?${queryParams}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch team members');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error in teamService:', error);
+      throw error;
+    }
   }
 
   async getTeamMember(id) {
-    return apiService.get(API_ENDPOINTS.TEAM_MEMBER(id));
-  }
-
-  async createTeamMember(data) {
-    return apiService.post(API_ENDPOINTS.TEAM, data);
-  }
-
-  async updateTeamMember(id, data) {
-    return apiService.patch(API_ENDPOINTS.TEAM_MEMBER(id), data);
-  }
-
-  async deleteTeamMember(id) {
-    return apiService.delete(API_ENDPOINTS.TEAM_MEMBER(id));
-  }
-
-  async uploadAvatar(id, file) {
-    return apiService.uploadFile(`/team/${id}/avatar`, file, 'avatar');
-  }
-
-  getAvatarUrl(id) {
-    return API_ENDPOINTS.TEAM_AVATAR(id);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/team/${id}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch team member');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error in teamService:', error);
+      throw error;
+    }
   }
 }
 
-export default new TeamService();
+// Create and export instance
+const teamService = new TeamService();
+export default teamService;

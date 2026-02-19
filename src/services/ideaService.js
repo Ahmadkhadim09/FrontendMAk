@@ -1,31 +1,49 @@
-import apiService from './api';
-import { API_ENDPOINTS } from '../config/api';
-
 class IdeaService {
   async submitIdea(ideaData) {
-    return apiService.post(API_ENDPOINTS.IDEAS, ideaData);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/ideas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ideaData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit idea');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in ideaService:', error);
+      throw error;
+    }
   }
 
   async getAllIdeas(page = 1, status = '') {
-    const queryParams = new URLSearchParams({
-      page,
-      ...(status && { status })
-    }).toString();
+    try {
+      const queryParams = new URLSearchParams({
+        page,
+        ...(status && { status })
+      }).toString();
 
-    return apiService.get(`${API_ENDPOINTS.IDEAS}?${queryParams}`);
-  }
-
-  async getIdea(id) {
-    return apiService.get(`${API_ENDPOINTS.IDEAS}/${id}`);
-  }
-
-  async reviewIdea(id, reviewData) {
-    return apiService.patch(`${API_ENDPOINTS.IDEAS}/${id}/review`, reviewData);
-  }
-
-  async deleteIdea(id) {
-    return apiService.delete(`${API_ENDPOINTS.IDEAS}/${id}`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/ideas?${queryParams}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch ideas');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error in ideaService:', error);
+      throw error;
+    }
   }
 }
 
-export default new IdeaService();
+// Create and export instance
+const ideaService = new IdeaService();
+export default ideaService;

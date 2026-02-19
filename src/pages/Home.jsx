@@ -8,6 +8,7 @@ import testimonialService from '../services/testimonialService';
 import teamService from '../services/teamService';
 import contactService from '../services/contactService';
 import ideaService from '../services/ideaService';
+import ContactForm from '../components/ContactForm'; // Import your ContactForm
 import './Home.css';
 
 const Home = () => {
@@ -23,18 +24,7 @@ const Home = () => {
     testimonials: true
   });
 
-  // Form states
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    company: '',
-    projectType: '',
-    budget: '',
-    timeline: '',
-    message: '',
-    newsletter: false
-  });
-
+  // State for idea form only (contact form is now in ContactForm component)
   const [ideaForm, setIdeaForm] = useState({
     name: '',
     email: '',
@@ -44,15 +34,13 @@ const Home = () => {
     acceptTerms: false
   });
 
-  const [formStatus, setFormStatus] = useState({
-    contact: { submitted: false, success: false, message: '' },
-    idea: { submitted: false, success: false, message: '' }
+  const [ideaStatus, setIdeaStatus] = useState({
+    submitted: false,
+    success: false,
+    message: ''
   });
 
-  const [formLoading, setFormLoading] = useState({
-    contact: false,
-    idea: false
-  });
+  const [ideaLoading, setIdeaLoading] = useState(false);
 
   // Slides data
   const slides = [
@@ -147,14 +135,6 @@ const Home = () => {
     setCurrentSlide(index);
   };
 
-  const handleContactChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    setContactForm({
-      ...contactForm,
-      [e.target.name]: value
-    });
-  };
-
   const handleIdeaChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setIdeaForm({
@@ -163,90 +143,41 @@ const Home = () => {
     });
   };
 
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-    setFormLoading({ ...formLoading, contact: true });
-    
-    try {
-      const response = await contactService.submitContact(contactForm);
-      
-      setFormStatus({
-        ...formStatus,
-        contact: {
-          submitted: true,
-          success: true,
-          message: response.message || 'Thank you! We\'ll contact you within 24 hours.'
-        }
-      });
-      
-      setContactForm({
-        name: '', email: '', company: '', projectType: '',
-        budget: '', timeline: '', message: '', newsletter: false
-      });
-    } catch (error) {
-      setFormStatus({
-        ...formStatus,
-        contact: {
-          submitted: true,
-          success: false,
-          message: error.message || 'Something went wrong. Please try again.'
-        }
-      });
-    } finally {
-      setFormLoading({ ...formLoading, contact: false });
-      
-      setTimeout(() => {
-        setFormStatus(prev => ({
-          ...prev,
-          contact: { submitted: false, success: false, message: '' }
-        }));
-      }, 5000);
-    }
-  };
-
   const handleIdeaSubmit = async (e) => {
     e.preventDefault();
-    setFormLoading({ ...formLoading, idea: true });
+    setIdeaLoading(true);
     
     try {
       const response = await ideaService.submitIdea(ideaForm);
       
-      setFormStatus({
-        ...formStatus,
-        idea: {
-          submitted: true,
-          success: true,
-          message: response.message || 'Your innovative idea has been received!'
-        }
+      setIdeaStatus({
+        submitted: true,
+        success: true,
+        message: response.message || 'Your innovative idea has been received!'
       });
       
       setIdeaForm({
         name: '', email: '', ideaTitle: '', ideaDescription: '', industry: '', acceptTerms: false
       });
     } catch (error) {
-      setFormStatus({
-        ...formStatus,
-        idea: {
-          submitted: true,
-          success: false,
-          message: error.message || 'Something went wrong. Please try again.'
-        }
+      setIdeaStatus({
+        submitted: true,
+        success: false,
+        message: error.message || 'Something went wrong. Please try again.'
       });
     } finally {
-      setFormLoading({ ...formLoading, idea: false });
+      setIdeaLoading(false);
       
       setTimeout(() => {
-        setFormStatus(prev => ({
-          ...prev,
-          idea: { submitted: false, success: false, message: '' }
-        }));
+        setIdeaStatus({
+          submitted: false,
+          success: false,
+          message: ''
+        });
       }, 5000);
     }
   };
 
-  const projectTypes = ['Web Application', 'Mobile App', 'E-commerce', 'AI/ML Solution', 'Cloud Migration', 'Other'];
-  const budgetRanges = ['Less than $10,000', '$10,000 - $25,000', '$25,000 - $50,000', '$50,000 - $100,000', '$100,000+'];
-  const timelineOptions = ['ASAP', '1-3 months', '3-6 months', '6-12 months', 'Flexible'];
   const industries = ['Technology', 'Healthcare', 'Finance', 'Education', 'Retail', 'Manufacturing', 'Other'];
 
   return (
@@ -385,9 +316,9 @@ const Home = () => {
           </div>
           
           <div className="idea-card">
-            {formStatus.idea.submitted && (
-              <div className={`message ${formStatus.idea.success ? 'success' : 'error'}`}>
-                {formStatus.idea.success ? '✅' : '❌'} {formStatus.idea.message}
+            {ideaStatus.submitted && (
+              <div className={`message ${ideaStatus.success ? 'success' : 'error'}`}>
+                {ideaStatus.success ? '✅' : '❌'} {ideaStatus.message}
               </div>
             )}
             
@@ -478,16 +409,16 @@ const Home = () => {
               <button 
                 type="submit" 
                 className="btn btn-primary btn-full"
-                disabled={formLoading.idea}
+                disabled={ideaLoading}
               >
-                {formLoading.idea ? 'Submitting...' : 'Submit Your Idea'}
+                {ideaLoading ? 'Submitting...' : 'Submit Your Idea'}
               </button>
             </form>
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Contact Section - USING YOUR CONTACT FORM COMPONENT */}
       <section className="contact-section">
         <div className="container">
           <div className="contact-wrapper">
@@ -519,136 +450,8 @@ const Home = () => {
             </div>
 
             <div className="contact-form-side">
-              {formStatus.contact.submitted && (
-                <div className={`message ${formStatus.contact.success ? 'success' : 'error'}`}>
-                  {formStatus.contact.success ? '✅' : '❌'} {formStatus.contact.message}
-                </div>
-              )}
-
-              <form onSubmit={handleContactSubmit} className="contact-form">
-                <h3>Project Inquiry</h3>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="name">Full Name *</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={contactForm.name}
-                      onChange={handleContactChange}
-                      required
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="email">Email *</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={contactForm.email}
-                      onChange={handleContactChange}
-                      required
-                      placeholder="john@example.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="company">Company</label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={contactForm.company}
-                    onChange={handleContactChange}
-                    placeholder="Your Company Name"
-                  />
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="projectType">Project Type *</label>
-                    <select
-                      id="projectType"
-                      name="projectType"
-                      value={contactForm.projectType}
-                      onChange={handleContactChange}
-                      required
-                    >
-                      <option value="">Select type</option>
-                      {projectTypes.map((type, index) => (
-                        <option key={index} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="budget">Budget Range</label>
-                    <select
-                      id="budget"
-                      name="budget"
-                      value={contactForm.budget}
-                      onChange={handleContactChange}
-                    >
-                      <option value="">Select budget</option>
-                      {budgetRanges.map((range, index) => (
-                        <option key={index} value={range}>{range}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="timeline">Timeline</label>
-                  <select
-                    id="timeline"
-                    name="timeline"
-                    value={contactForm.timeline}
-                    onChange={handleContactChange}
-                  >
-                    <option value="">Select timeline</option>
-                    {timelineOptions.map((option, index) => (
-                      <option key={index} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="message">Project Details *</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={contactForm.message}
-                    onChange={handleContactChange}
-                    required
-                    placeholder="Describe your project, goals, and requirements..."
-                    rows="4"
-                  />
-                </div>
-
-                <div className="form-group checkbox-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="newsletter"
-                      checked={contactForm.newsletter}
-                      onChange={handleContactChange}
-                    />
-                    <span>Subscribe to our newsletter for tech insights</span>
-                  </label>
-                </div>
-
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-full"
-                  disabled={formLoading.contact}
-                >
-                  {formLoading.contact ? 'Sending...' : 'Send Inquiry'}
-                </button>
-              </form>
+              {/* USING THE IMPORTED CONTACT FORM COMPONENT */}
+              <ContactForm />
             </div>
           </div>
         </div>
