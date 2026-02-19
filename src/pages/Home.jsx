@@ -3,12 +3,28 @@ import { Link } from 'react-router-dom';
 import ServiceCard from '../components/ServiceCard';
 import TeamCard from '../components/TeamCard';
 import TestimonialCard from '../components/TestimonialCard';
+import projectService from '../services/projectService';
+import testimonialService from '../services/testimonialService';
+import teamService from '../services/teamService';
+import contactService from '../services/contactService';
+import ideaService from '../services/ideaService';
 import './Home.css';
 
 const Home = () => {
-  // All your state and functions here
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [formData, setFormData] = useState({
+  const [projects, setProjects] = useState([]);
+  const [services, setServices] = useState([]);
+  const [team, setTeam] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState({
+    projects: true,
+    services: true,
+    team: true,
+    testimonials: true
+  });
+
+  // Form states
+  const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
     company: '',
@@ -19,7 +35,7 @@ const Home = () => {
     newsletter: false
   });
 
-  const [ideaData, setIdeaData] = useState({
+  const [ideaForm, setIdeaForm] = useState({
     name: '',
     email: '',
     ideaTitle: '',
@@ -28,11 +44,17 @@ const Home = () => {
     acceptTerms: false
   });
 
-  const [formStatus, setFormStatus] = useState({ submitted: false, success: false, message: '' });
-  const [ideaStatus, setIdeaStatus] = useState({ submitted: false, success: false, message: '' });
-  const [loading, setLoading] = useState({ contact: false, idea: false });
+  const [formStatus, setFormStatus] = useState({
+    contact: { submitted: false, success: false, message: '' },
+    idea: { submitted: false, success: false, message: '' }
+  });
 
-  // Slider images/data
+  const [formLoading, setFormLoading] = useState({
+    contact: false,
+    idea: false
+  });
+
+  // Slides data
   const slides = [
     {
       id: 1,
@@ -68,6 +90,11 @@ const Home = () => {
     }
   ];
 
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   // Auto-slider effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -75,6 +102,38 @@ const Home = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [slides.length]);
+
+  const fetchData = async () => {
+    try {
+      // Fetch projects
+      const projectsRes = await projectService.getAllProjects(1, 4, { featured: true });
+      setProjects(projectsRes.data.projects || []);
+      
+      // Fetch services
+      const servicesRes = await fetch(`${process.env.REACT_APP_API_URL}/services`);
+      const servicesData = await servicesRes.json();
+      setServices(servicesData.data?.services || []);
+      
+      // Fetch team
+      const teamRes = await fetch(`${process.env.REACT_APP_API_URL}/team?featured=true`);
+      const teamData = await teamRes.json();
+      setTeam(teamData.data?.team || []);
+      
+      // Fetch testimonials
+      const testimonialsRes = await fetch(`${process.env.REACT_APP_API_URL}/testimonials?featured=true`);
+      const testimonialsData = await testimonialsRes.json();
+      setTestimonials(testimonialsData.data?.testimonials || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading({
+        projects: false,
+        services: false,
+        team: false,
+        testimonials: false
+      });
+    }
+  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -90,85 +149,100 @@ const Home = () => {
 
   const handleContactChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    setFormData({
-      ...formData,
+    setContactForm({
+      ...contactForm,
       [e.target.name]: value
     });
   };
 
   const handleIdeaChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    setIdeaData({
-      ...ideaData,
+    setIdeaForm({
+      ...ideaForm,
       [e.target.name]: value
     });
   };
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
-    setLoading({ ...loading, contact: true });
+    setFormLoading({ ...formLoading, contact: true });
     
-    // Simulate API call
-    setTimeout(() => {
-      setFormStatus({ 
-        submitted: true, 
-        success: true, 
-        message: 'Thank you! We\'ll contact you within 24 hours.' 
+    try {
+      const response = await contactService.submitContact(contactForm);
+      
+      setFormStatus({
+        ...formStatus,
+        contact: {
+          submitted: true,
+          success: true,
+          message: response.message || 'Thank you! We\'ll contact you within 24 hours.'
+        }
       });
-      setFormData({
-        name: '', email: '', company: '', projectType: '', 
+      
+      setContactForm({
+        name: '', email: '', company: '', projectType: '',
         budget: '', timeline: '', message: '', newsletter: false
       });
-      setLoading({ ...loading, contact: false });
+    } catch (error) {
+      setFormStatus({
+        ...formStatus,
+        contact: {
+          submitted: true,
+          success: false,
+          message: error.message || 'Something went wrong. Please try again.'
+        }
+      });
+    } finally {
+      setFormLoading({ ...formLoading, contact: false });
       
       setTimeout(() => {
-        setFormStatus({ submitted: false, success: false, message: '' });
+        setFormStatus(prev => ({
+          ...prev,
+          contact: { submitted: false, success: false, message: '' }
+        }));
       }, 5000);
-    }, 1500);
+    }
   };
 
   const handleIdeaSubmit = async (e) => {
     e.preventDefault();
-    setLoading({ ...loading, idea: true });
+    setFormLoading({ ...formLoading, idea: true });
     
-    // Simulate API call
-    setTimeout(() => {
-      setIdeaStatus({ 
-        submitted: true, 
-        success: true, 
-        message: 'Your innovative idea has been received! We\'ll evaluate and get back to you.' 
+    try {
+      const response = await ideaService.submitIdea(ideaForm);
+      
+      setFormStatus({
+        ...formStatus,
+        idea: {
+          submitted: true,
+          success: true,
+          message: response.message || 'Your innovative idea has been received!'
+        }
       });
-      setIdeaData({
+      
+      setIdeaForm({
         name: '', email: '', ideaTitle: '', ideaDescription: '', industry: '', acceptTerms: false
       });
-      setLoading({ ...loading, idea: false });
+    } catch (error) {
+      setFormStatus({
+        ...formStatus,
+        idea: {
+          submitted: true,
+          success: false,
+          message: error.message || 'Something went wrong. Please try again.'
+        }
+      });
+    } finally {
+      setFormLoading({ ...formLoading, idea: false });
       
       setTimeout(() => {
-        setIdeaStatus({ submitted: false, success: false, message: '' });
+        setFormStatus(prev => ({
+          ...prev,
+          idea: { submitted: false, success: false, message: '' }
+        }));
       }, 5000);
-    }, 1500);
+    }
   };
-
-  const services = [
-    { icon: '💻', title: 'Web Development', description: 'Custom web applications with React, Node.js, and Python.' },
-    { icon: '📱', title: 'Mobile Apps', description: 'Native and cross-platform mobile apps for iOS and Android.' },
-    { icon: '☁️', title: 'Cloud Solutions', description: 'Scalable infrastructure on AWS, Azure, and GCP.' },
-    { icon: '🤖', title: 'AI & Machine Learning', description: 'Intelligent solutions with cutting-edge AI algorithms.' },
-  ];
-
-  const team = [
-    { name: 'John Doe', role: 'Founder & CEO', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80', bio: '10+ years in software development and team leadership.' },
-    { name: 'Jane Smith', role: 'Lead Developer', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80', bio: 'Full-stack developer specializing in React and Node.js.' },
-    { name: 'Mike Johnson', role: 'UI/UX Director', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80', bio: 'Creating beautiful and intuitive user experiences.' },
-    { name: 'Sarah Williams', role: 'AI Specialist', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80', bio: 'Expert in machine learning and neural networks.' }
-  ];
-
-  const testimonials = [
-    { name: 'Mike Johnson', company: 'TechCorp', content: 'MAKDEVS delivered an exceptional product that exceeded our expectations!', rating: 5 },
-    { name: 'Sarah Williams', company: 'StartUp Inc', content: 'Professional team, excellent communication, and outstanding technical skills.', rating: 5 },
-    { name: 'David Brown', company: 'Enterprise Solutions', content: 'They transformed our legacy system into a modern, scalable platform.', rating: 5 },
-    { name: 'Emily Davis', company: 'Innovation Labs', content: 'The AI solution they built for us increased efficiency by 300%.', rating: 5 }
-  ];
 
   const projectTypes = ['Web Application', 'Mobile App', 'E-commerce', 'AI/ML Solution', 'Cloud Migration', 'Other'];
   const budgetRanges = ['Less than $10,000', '$10,000 - $25,000', '$25,000 - $50,000', '$50,000 - $100,000', '$100,000+'];
@@ -217,9 +291,13 @@ const Home = () => {
           <h2 className="section-title">Our Services</h2>
           <p className="section-subtitle">Comprehensive software solutions tailored to your business needs</p>
           <div className="services-grid">
-            {services.map((service, index) => (
-              <ServiceCard key={index} {...service} />
-            ))}
+            {loading.services ? (
+              <div className="loading">Loading services...</div>
+            ) : (
+              services.map((service, index) => (
+                <ServiceCard key={index} {...service} />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -236,15 +314,47 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Featured Projects Section */}
+      <section className="projects-section">
+        <div className="container">
+          <h2 className="section-title">Featured Projects</h2>
+          <p className="section-subtitle">Some of our best work</p>
+          <div className="projects-grid">
+            {loading.projects ? (
+              <div className="loading">Loading projects...</div>
+            ) : (
+              projects.map(project => (
+                <div key={project._id} className="project-card">
+                  {project.images && project.images.length > 0 && (
+                    <img 
+                      src={`${process.env.REACT_APP_API_URL}/projects/${project._id}/images/0`} 
+                      alt={project.title}
+                      className="project-image"
+                    />
+                  )}
+                  <h3>{project.title}</h3>
+                  <p>{project.description}</p>
+                  <Link to={`/portfolio/${project.slug}`} className="btn btn-outline">View Project</Link>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Team Section */}
       <section className="team-section">
         <div className="container">
           <h2 className="section-title">Our Team</h2>
           <p className="section-subtitle">Meet the talented individuals behind our success</p>
           <div className="team-grid">
-            {team.map((member, index) => (
-              <TeamCard key={index} {...member} />
-            ))}
+            {loading.team ? (
+              <div className="loading">Loading team...</div>
+            ) : (
+              team.map((member, index) => (
+                <TeamCard key={index} member={member} />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -255,9 +365,13 @@ const Home = () => {
           <h2 className="section-title">What Our Clients Say</h2>
           <p className="section-subtitle">Don't just take our word for it</p>
           <div className="testimonials-grid">
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard key={index} {...testimonial} />
-            ))}
+            {loading.testimonials ? (
+              <div className="loading">Loading testimonials...</div>
+            ) : (
+              testimonials.map((testimonial, index) => (
+                <TestimonialCard key={index} testimonial={testimonial} />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -271,10 +385,9 @@ const Home = () => {
           </div>
           
           <div className="idea-card">
-            {ideaStatus.submitted && ideaStatus.success && (
-              <div className="success-message">
-                <span className="success-icon">✅</span>
-                <p>{ideaStatus.message}</p>
+            {formStatus.idea.submitted && (
+              <div className={`message ${formStatus.idea.success ? 'success' : 'error'}`}>
+                {formStatus.idea.success ? '✅' : '❌'} {formStatus.idea.message}
               </div>
             )}
             
@@ -286,7 +399,7 @@ const Home = () => {
                     type="text"
                     id="idea-name"
                     name="name"
-                    value={ideaData.name}
+                    value={ideaForm.name}
                     onChange={handleIdeaChange}
                     required
                     placeholder="John Doe"
@@ -299,7 +412,7 @@ const Home = () => {
                     type="email"
                     id="idea-email"
                     name="email"
-                    value={ideaData.email}
+                    value={ideaForm.email}
                     onChange={handleIdeaChange}
                     required
                     placeholder="john@example.com"
@@ -313,7 +426,7 @@ const Home = () => {
                   type="text"
                   id="idea-title"
                   name="ideaTitle"
-                  value={ideaData.ideaTitle}
+                  value={ideaForm.ideaTitle}
                   onChange={handleIdeaChange}
                   required
                   placeholder="e.g., AI-Powered Personal Assistant"
@@ -325,7 +438,7 @@ const Home = () => {
                 <select
                   id="idea-industry"
                   name="industry"
-                  value={ideaData.industry}
+                  value={ideaForm.industry}
                   onChange={handleIdeaChange}
                   required
                 >
@@ -341,7 +454,7 @@ const Home = () => {
                 <textarea
                   id="idea-description"
                   name="ideaDescription"
-                  value={ideaData.ideaDescription}
+                  value={ideaForm.ideaDescription}
                   onChange={handleIdeaChange}
                   required
                   placeholder="What problem does it solve? Who is it for? What makes it unique?"
@@ -354,7 +467,7 @@ const Home = () => {
                   <input
                     type="checkbox"
                     name="acceptTerms"
-                    checked={ideaData.acceptTerms}
+                    checked={ideaForm.acceptTerms}
                     onChange={handleIdeaChange}
                     required
                   />
@@ -364,10 +477,10 @@ const Home = () => {
 
               <button 
                 type="submit" 
-                className={`btn btn-primary btn-full ${loading.idea ? 'btn-loading' : ''}`}
-                disabled={loading.idea}
+                className="btn btn-primary btn-full"
+                disabled={formLoading.idea}
               >
-                {loading.idea ? 'Submitting...' : 'Submit Your Idea'}
+                {formLoading.idea ? 'Submitting...' : 'Submit Your Idea'}
               </button>
             </form>
           </div>
@@ -406,10 +519,9 @@ const Home = () => {
             </div>
 
             <div className="contact-form-side">
-              {formStatus.submitted && formStatus.success && (
-                <div className="success-message">
-                  <span className="success-icon">✅</span>
-                  <p>{formStatus.message}</p>
+              {formStatus.contact.submitted && (
+                <div className={`message ${formStatus.contact.success ? 'success' : 'error'}`}>
+                  {formStatus.contact.success ? '✅' : '❌'} {formStatus.contact.message}
                 </div>
               )}
 
@@ -423,7 +535,7 @@ const Home = () => {
                       type="text"
                       id="name"
                       name="name"
-                      value={formData.name}
+                      value={contactForm.name}
                       onChange={handleContactChange}
                       required
                       placeholder="John Doe"
@@ -436,7 +548,7 @@ const Home = () => {
                       type="email"
                       id="email"
                       name="email"
-                      value={formData.email}
+                      value={contactForm.email}
                       onChange={handleContactChange}
                       required
                       placeholder="john@example.com"
@@ -450,7 +562,7 @@ const Home = () => {
                     type="text"
                     id="company"
                     name="company"
-                    value={formData.company}
+                    value={contactForm.company}
                     onChange={handleContactChange}
                     placeholder="Your Company Name"
                   />
@@ -462,7 +574,7 @@ const Home = () => {
                     <select
                       id="projectType"
                       name="projectType"
-                      value={formData.projectType}
+                      value={contactForm.projectType}
                       onChange={handleContactChange}
                       required
                     >
@@ -478,7 +590,7 @@ const Home = () => {
                     <select
                       id="budget"
                       name="budget"
-                      value={formData.budget}
+                      value={contactForm.budget}
                       onChange={handleContactChange}
                     >
                       <option value="">Select budget</option>
@@ -494,7 +606,7 @@ const Home = () => {
                   <select
                     id="timeline"
                     name="timeline"
-                    value={formData.timeline}
+                    value={contactForm.timeline}
                     onChange={handleContactChange}
                   >
                     <option value="">Select timeline</option>
@@ -509,7 +621,7 @@ const Home = () => {
                   <textarea
                     id="message"
                     name="message"
-                    value={formData.message}
+                    value={contactForm.message}
                     onChange={handleContactChange}
                     required
                     placeholder="Describe your project, goals, and requirements..."
@@ -522,7 +634,7 @@ const Home = () => {
                     <input
                       type="checkbox"
                       name="newsletter"
-                      checked={formData.newsletter}
+                      checked={contactForm.newsletter}
                       onChange={handleContactChange}
                     />
                     <span>Subscribe to our newsletter for tech insights</span>
@@ -531,10 +643,10 @@ const Home = () => {
 
                 <button 
                   type="submit" 
-                  className={`btn btn-primary btn-full ${loading.contact ? 'btn-loading' : ''}`}
-                  disabled={loading.contact}
+                  className="btn btn-primary btn-full"
+                  disabled={formLoading.contact}
                 >
-                  {loading.contact ? 'Sending...' : 'Send Inquiry'}
+                  {formLoading.contact ? 'Sending...' : 'Send Inquiry'}
                 </button>
               </form>
             </div>
@@ -558,5 +670,4 @@ const Home = () => {
   );
 };
 
-// THIS IS THE CRITICAL PART - MAKE SURE THIS LINE EXISTS AT THE VERY END
 export default Home;

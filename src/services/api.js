@@ -1,108 +1,110 @@
-// Get the API URL from environment variables
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+import API_BASE_URL from '../config/api';
 
-// Helper function to handle responses
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || 'Something went wrong');
+class ApiService {
+  constructor() {
+    this.baseUrl = API_BASE_URL;
   }
-  return response.json();
-};
 
-// Helper function to handle errors
-const handleError = (error) => {
-  console.error('API Error:', error);
-  throw error;
-};
+  async request(endpoint, options = {}) {
+    const url = `${this.baseUrl}${endpoint}`;
+    
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+    };
 
-export const api = {
-  // Projects
-  getProjects: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/projects`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      return handleResponse(response);
-    } catch (error) {
-      handleError(error);
+    const config = {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+    };
+
+    // Add token if exists
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-  },
 
-  getProject: async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      return handleResponse(response);
-    } catch (error) {
-      handleError(error);
-    }
-  },
+      const response = await fetch(url, config);
+      
+      // Handle 401 Unauthorized
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
 
-  // Services
-  getServices: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/services`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      return handleResponse(response);
-    } catch (error) {
-      handleError(error);
-    }
-  },
+      const data = await response.json();
 
-  // Contact
-  sendContactForm: async (formData) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/contact`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      return handleResponse(response);
-    } catch (error) {
-      handleError(error);
-    }
-  },
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
 
-  // Testimonials
-  getTestimonials: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/testimonials`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      return handleResponse(response);
+      return data;
     } catch (error) {
-      handleError(error);
+      console.error('API Error:', error);
+      throw error;
     }
-  },
+  }
 
-  // Submit Idea
-  submitIdea: async (ideaData) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/ideas`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(ideaData),
-      });
-      return handleResponse(response);
-    } catch (error) {
-      handleError(error);
-    }
-  },
-};
+  // GET request
+  get(endpoint) {
+    return this.request(endpoint, { method: 'GET' });
+  }
 
-export default api;
+  // POST request
+  post(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // PUT request
+  put(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // PATCH request
+  patch(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // DELETE request
+  delete(endpoint) {
+    return this.request(endpoint, { method: 'DELETE' });
+  }
+
+  // File upload (for images)
+  uploadFile(endpoint, file, fieldName = 'file') {
+    const formData = new FormData();
+    formData.append(fieldName, file);
+
+    return this.request(endpoint, {
+      method: 'POST',
+      headers: {}, // Let browser set content-type for FormData
+      body: formData,
+    });
+  }
+
+  // Upload multiple files
+  uploadFiles(endpoint, files, fieldName = 'files') {
+    const formData = new FormData();
+    files.forEach(file => formData.append(fieldName, file));
+
+    return this.request(endpoint, {
+      method: 'POST',
+      headers: {},
+      body: formData,
+    });
+  }
+}
+
+export default new ApiService();

@@ -1,7 +1,13 @@
 import React from 'react';
 import './TestimonialCard.css';
 
-const TestimonialCard = ({ name, company, content, rating }) => {
+const TestimonialCard = ({ testimonial }) => {
+  const { name, company, content, rating, avatar, _id } = testimonial;
+  
+  const avatarUrl = avatar && avatar.data 
+    ? `${process.env.REACT_APP_API_URL}/testimonials/${_id}/avatar`
+    : 'https://via.placeholder.com/100';
+
   return (
     <div className="testimonial-card">
       <div className="testimonial-rating">
@@ -11,6 +17,7 @@ const TestimonialCard = ({ name, company, content, rating }) => {
       </div>
       <p className="testimonial-content">"{content}"</p>
       <div className="testimonial-author">
+        <img src={avatarUrl} alt={name} className="author-avatar" />
         <div className="author-info">
           <h4>{name}</h4>
           <p>{company}</p>
