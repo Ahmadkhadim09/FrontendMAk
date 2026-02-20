@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
   IDEAS: `${API_BASE_URL}/ideas`,
   
   // Newsletter
+  NEWSLETTER: `${API_BASE_URL}/newsletter`,
   NEWSLETTER_SUBSCRIBE: `${API_BASE_URL}/newsletter/subscribe`,
   NEWSLETTER_UNSUBSCRIBE: `${API_BASE_URL}/newsletter/unsubscribe`,
   

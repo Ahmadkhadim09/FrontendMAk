@@ -20,7 +20,7 @@ const ContactForm = () => {
     message: '' 
   });
 
-  const API_URL = 'https://makdevs-server.onrender.com/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://makdevs-server.onrender.com/api';
 
   const projectTypes = [
     'Web Application', 
