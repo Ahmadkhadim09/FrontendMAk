@@ -4,9 +4,6 @@ import ServiceCard from '../components/ServiceCard';
 import TeamCard from '../components/TeamCard';
 import TestimonialCard from '../components/TestimonialCard';
 import projectService from '../services/projectService';
-import testimonialService from '../services/testimonialService';
-import teamService from '../services/teamService';
-import contactService from '../services/contactService';
 import ideaService from '../services/ideaService';
 import ContactForm from '../components/ContactForm'; // Import your ContactForm
 import './Home.css';
