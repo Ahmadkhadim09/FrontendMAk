@@ -1,7 +1,13 @@
+// Helper to get properly formatted API URL
+const getApiUrl = () => {
+  const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  return url.trim().replace(/\/+$/, '');
+};
+
 class IdeaService {
   async submitIdea(ideaData) {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/ideas`, {
+      const response = await fetch(`${getApiUrl()}/ideas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,7 +35,7 @@ class IdeaService {
         ...(status && { status })
       }).toString();
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/ideas?${queryParams}`);
+      const response = await fetch(`${getApiUrl()}/ideas?${queryParams}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch ideas');

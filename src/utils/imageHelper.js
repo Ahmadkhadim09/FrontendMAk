@@ -1,5 +1,5 @@
 const getImageUrl = (type, id, imageIndex = 0) => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api';
   
   switch (type) {
     case 'project':

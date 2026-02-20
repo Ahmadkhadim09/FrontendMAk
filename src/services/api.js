@@ -1,5 +1,10 @@
-// Base API configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Base API configuration - ensure URL is properly formatted
+const getApiBaseUrl = () => {
+  const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  return url.trim().replace(/\/$/, ''); // Remove trailing slash and spaces
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiService {
   constructor() {

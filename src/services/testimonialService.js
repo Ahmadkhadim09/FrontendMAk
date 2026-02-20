@@ -1,5 +1,11 @@
 import apiService from './api';
 
+// Helper to get properly formatted API URL
+const getApiUrl = () => {
+  const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  return url.trim().replace(/\/+$/, '');
+};
+
 class TestimonialService {
   async getAllTestimonials(page = 1, featured = false) {
     try {
@@ -8,7 +14,7 @@ class TestimonialService {
         ...(featured && { featured: true })
       }).toString();
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/testimonials?${queryParams}`);
+      const response = await fetch(`${getApiUrl()}/testimonials?${queryParams}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch testimonials');
@@ -24,7 +30,7 @@ class TestimonialService {
 
   async getTestimonial(id) {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/testimonials/${id}`);
+      const response = await fetch(`${getApiUrl()}/testimonials/${id}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch testimonial');

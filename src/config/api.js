@@ -1,4 +1,10 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Ensure API URL is properly formatted (trim spaces, remove trailing slashes)
+const getApiBaseUrl = () => {
+  const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  return url.trim().replace(/\/$/, ''); // Remove trailing slash
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const API_ENDPOINTS = {
   // Auth

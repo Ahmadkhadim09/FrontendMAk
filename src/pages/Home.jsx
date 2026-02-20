@@ -94,18 +94,21 @@ const Home = () => {
       const projectsRes = await projectService.getAllProjects(1, 4, { featured: true });
       setProjects(projectsRes.data.projects || []);
       
+      // Get API URL helper
+      const apiUrl = process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api';
+      
       // Fetch services
-      const servicesRes = await fetch(`${process.env.REACT_APP_API_URL}/services`);
+      const servicesRes = await fetch(`${apiUrl}/services`);
       const servicesData = await servicesRes.json();
       setServices(servicesData.data?.services || []);
       
       // Fetch team
-      const teamRes = await fetch(`${process.env.REACT_APP_API_URL}/team?featured=true`);
+      const teamRes = await fetch(`${apiUrl}/team?featured=true`);
       const teamData = await teamRes.json();
       setTeam(teamData.data?.team || []);
       
       // Fetch testimonials
-      const testimonialsRes = await fetch(`${process.env.REACT_APP_API_URL}/testimonials?featured=true`);
+      const testimonialsRes = await fetch(`${apiUrl}/testimonials?featured=true`);
       const testimonialsData = await testimonialsRes.json();
       setTestimonials(testimonialsData.data?.testimonials || []);
     } catch (error) {
@@ -255,7 +258,7 @@ const Home = () => {
                 <div key={project._id} className="project-card">
                   {project.images && project.images.length > 0 && (
                     <img 
-                      src={`${process.env.REACT_APP_API_URL}/projects/${project._id}/images/0`} 
+                      src={`${process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api'}/projects/${project._id}/images/0`} 
                       alt={project.title}
                       className="project-image"
                     />

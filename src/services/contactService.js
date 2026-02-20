@@ -1,7 +1,13 @@
+// Helper to get properly formatted API URL
+const getApiUrl = () => {
+  const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  return url.trim().replace(/\/+$/, '');
+};
+
 class ContactService {
   async submitContact(formData) {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/contact`, {
+      const response = await fetch(`${getApiUrl()}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,7 +35,7 @@ class ContactService {
         ...(status && { status })
       }).toString();
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/contact?${queryParams}`);
+      const response = await fetch(`${getApiUrl()}/contact?${queryParams}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch contacts');
@@ -45,7 +51,7 @@ class ContactService {
 
   async getContact(id) {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/contact/${id}`);
+      const response = await fetch(`${getApiUrl()}/contact/${id}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch contact');

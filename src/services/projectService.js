@@ -1,3 +1,9 @@
+// Helper to get properly formatted API URL
+const getApiUrl = () => {
+  const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  return url.trim().replace(/\/+$/, '');
+};
+
 class ProjectService {
   async getAllProjects(page = 1, limit = 9, filters = {}) {
     try {
@@ -7,7 +13,7 @@ class ProjectService {
         ...filters
       }).toString();
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/projects?${queryParams}`);
+      const response = await fetch(`${getApiUrl()}/projects?${queryParams}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch projects');
@@ -23,7 +29,7 @@ class ProjectService {
 
   async getProjectBySlug(slug) {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/projects/${slug}`);
+      const response = await fetch(`${getApiUrl()}/projects/${slug}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch project');

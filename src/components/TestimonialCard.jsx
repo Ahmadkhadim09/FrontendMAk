@@ -4,8 +4,9 @@ import './TestimonialCard.css';
 const TestimonialCard = ({ testimonial }) => {
   const { name, company, content, rating, avatar, _id } = testimonial;
   
+  const apiUrl = process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api';
   const avatarUrl = avatar && avatar.data 
-    ? `${process.env.REACT_APP_API_URL}/testimonials/${_id}/avatar`
+    ? `${apiUrl}/testimonials/${_id}/avatar`
     : 'https://via.placeholder.com/100';
 
   return (
