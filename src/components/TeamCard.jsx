@@ -4,7 +4,13 @@ import './TeamCard.css';
 const TeamCard = ({ member }) => {
   const { name, role, bio, image, social, _id } = member;
   
-  const apiUrl = process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api';
+  const DEFAULT_API_BASE =
+    process.env.NODE_ENV === 'production'
+      ? 'https://makdevs-server.onrender.com/api'
+      : 'http://localhost:5000/api';
+
+  const apiUrl =
+    process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || DEFAULT_API_BASE;
   const avatarUrl = image && image.data 
     ? `${apiUrl}/team/${_id}/avatar`
     : 'https://via.placeholder.com/300';

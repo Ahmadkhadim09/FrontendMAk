@@ -4,7 +4,13 @@ import './TestimonialCard.css';
 const TestimonialCard = ({ testimonial }) => {
   const { name, company, content, rating, avatar, _id } = testimonial;
   
-  const apiUrl = process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api';
+  const DEFAULT_API_BASE =
+    process.env.NODE_ENV === 'production'
+      ? 'https://makdevs-server.onrender.com/api'
+      : 'http://localhost:5000/api';
+
+  const apiUrl =
+    process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || DEFAULT_API_BASE;
   const avatarUrl = avatar && avatar.data 
     ? `${apiUrl}/testimonials/${_id}/avatar`
     : 'https://via.placeholder.com/100';

@@ -94,8 +94,13 @@ const Home = () => {
       const projectsRes = await projectService.getAllProjects(1, 4, { featured: true });
       setProjects(projectsRes.data.projects || []);
       
-      // Get API URL helper
-      const apiUrl = process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api';
+      // Get API URL (defaults to deployed backend in production)
+      const DEFAULT_API_BASE =
+        process.env.NODE_ENV === 'production'
+          ? 'https://makdevs-server.onrender.com/api'
+          : 'http://localhost:5000/api';
+      const apiUrl =
+        process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || DEFAULT_API_BASE;
       
       // Fetch services
       const servicesRes = await fetch(`${apiUrl}/services`);
@@ -258,7 +263,9 @@ const Home = () => {
                 <div key={project._id} className="project-card">
                   {project.images && project.images.length > 0 && (
                     <img 
-                      src={`${process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || 'http://localhost:5000/api'}/projects/${project._id}/images/0`} 
+                      src={`${(process.env.REACT_APP_API_URL?.trim().replace(/\/+$/, '') || (process.env.NODE_ENV === 'production'
+                        ? 'https://makdevs-server.onrender.com/api'
+                        : 'http://localhost:5000/api'))}/projects/${project._id}/images/0`} 
                       alt={project.title}
                       className="project-image"
                     />

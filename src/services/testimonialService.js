@@ -2,7 +2,12 @@ import apiService from './api';
 
 // Helper to get properly formatted API URL
 const getApiUrl = () => {
-  const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  const DEFAULT_API_BASE =
+    process.env.NODE_ENV === 'production'
+      ? 'https://makdevs-server.onrender.com/api'
+      : 'http://localhost:5000/api';
+
+  const url = process.env.REACT_APP_API_URL || DEFAULT_API_BASE;
   return url.trim().replace(/\/+$/, '');
 };
 
