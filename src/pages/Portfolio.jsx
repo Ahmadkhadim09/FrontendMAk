@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Seo from '../components/Seo';
 import './Portfolio.css';
 
 const Portfolio = () => {
@@ -75,6 +76,12 @@ const Portfolio = () => {
 
   return (
     <div className="portfolio-page">
+      <Seo
+        title="Portfolio"
+        description="Explore MAKDEVS portfolio — web applications, mobile apps, AI solutions, and cloud projects built for clients worldwide."
+        keywords="web development portfolio, software projects, case studies, MAKDEVS work"
+        path="/portfolio"
+      />
       <section className="portfolio-hero">
         <div className="container">
           <h1 className="portfolio-title">Our Portfolio</h1>

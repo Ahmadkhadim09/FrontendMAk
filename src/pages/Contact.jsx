@@ -1,42 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
+import ContactForm from '../components/ContactForm';
+import Seo from '../components/Seo';
+import { CONTACT } from '../config/contact';
 import './Contact.css';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    phone: '',
-    service: '',
-    message: ''
-  });
-
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-  };
-
-  const services = [
-    'Web Development',
-    'Mobile Development',
-    'Cloud Solutions',
-    'AI & Machine Learning',
-    'Cybersecurity',
-    'Data Analytics'
-  ];
-
   return (
     <div className="contact-page">
+      <Seo
+        title="Contact Us"
+        description="Contact MAKDEVS for web development, mobile apps, and software solutions. Get a free quote — we respond within 24 hours."
+        keywords="contact web developers, hire software developers, web development quote, MAKDEVS contact"
+        path="/contact"
+      />
+
       <section className="contact-hero">
         <div className="container">
           <h1 className="contact-title">Get In Touch</h1>
@@ -50,7 +27,6 @@ const Contact = () => {
         <div className="container">
           <div className="contact-grid">
 
-            {/* LEFT SIDE */}
             <div className="contact-info">
               <h2>Let's Work Together</h2>
               <p>
@@ -60,19 +36,13 @@ const Contact = () => {
 
               <div className="info-items">
                 <div className="info-item">
-                  <div className="info-icon">📍</div>
-                  <div>
-                    <h3>Visit Us</h3>
-                    <p>123 Tech Street<br />Silicon Valley, CA 94000</p>
-                  </div>
-                </div>
-
-                <div className="info-item">
                   <div className="info-icon">📞</div>
                   <div>
                     <h3>Call Us</h3>
-                    <p>+1 (555) 123-4567</p>
-                    <p>Mon-Fri, 9am-6pm PST</p>
+                    <p>
+                      <a href={CONTACT.phoneLink}>{CONTACT.phoneDisplay}</a>
+                    </p>
+                    <p>Mon-Fri, 9am-6pm</p>
                   </div>
                 </div>
 
@@ -80,156 +50,38 @@ const Contact = () => {
                   <div className="info-icon">✉️</div>
                   <div>
                     <h3>Email Us</h3>
-                    <p>info@makdevs.com</p>
-                    <p>support@makdevs.com</p>
+                    <p>
+                      <a href={CONTACT.emailLink}>{CONTACT.email}</a>
+                    </p>
                   </div>
                 </div>
-              </div>
 
-              <div className="social-links">
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-link"
-                >
-                  LinkedIn
-                </a>
-
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-link"
-                >
-                  Twitter
-                </a>
-
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-link"
-                >
-                  GitHub
-                </a>
-
-                <a
-                  href="https://dribbble.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-link"
-                >
-                  Dribbble
-                </a>
+                <div className="info-item">
+                  <div className="info-icon whatsapp-icon">
+                    <svg viewBox="0 0 24 24" fill="#25d366" width="28" height="28" aria-hidden="true">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3>WhatsApp</h3>
+                    <p>
+                      <a
+                        href={CONTACT.whatsappMessage}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="whatsapp-contact-link"
+                      >
+                        {CONTACT.phoneDisplay}
+                      </a>
+                    </p>
+                    <p>Chat with us instantly</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* RIGHT SIDE */}
             <div className="contact-form-container">
-              {submitted ? (
-                <div className="success-message">
-                  <h3>Thank You!</h3>
-                  <p>We've received your message and will get back to you soon.</p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="btn btn-primary"
-                  >
-                    Send Another Message
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="contact-form">
-
-                  <div className="form-group">
-                    <label htmlFor="name">Full Name *</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      placeholder="John Doe"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="email">Email Address *</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="john@example.com"
-                    />
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="company">Company</label>
-                      <input
-                        type="text"
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        placeholder="Your Company"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="phone">Phone Number</label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="+1 555 123 4567"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="service">Service Interested In *</label>
-                    <select
-                      id="service"
-                      name="service"
-                      value={formData.service}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="">Select a service</option>
-                      {services.map((service, index) => (
-                        <option key={index} value={service}>
-                          {service}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="message">Project Details *</label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      placeholder="Tell us about your project..."
-                      rows="6"
-                    />
-                  </div>
-
-                  <button type="submit" className="btn btn-primary btn-full">
-                    Send Message
-                  </button>
-
-                </form>
-              )}
+              <ContactForm />
             </div>
 
           </div>

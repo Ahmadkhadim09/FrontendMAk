@@ -74,6 +74,27 @@
   color: #94a3b8;
 }
 
+.footer-contact a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-contact a:hover {
+  color: var(--primary);
+}
+
+.footer-whatsapp {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-whatsapp svg {
+  color: #25d366;
+  flex-shrink: 0;
+}
+
 .footer-contact li {
   margin-bottom: 12px;
   display: flex;

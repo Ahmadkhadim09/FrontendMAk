@@ -80,6 +80,29 @@
   line-height: 1.5;
 }
 
+.info-item a {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.info-item a:hover {
+  color: #2563eb;
+}
+
+.whatsapp-contact-link {
+  color: #25d366 !important;
+  font-weight: 500;
+}
+
+.whatsapp-contact-link:hover {
+  color: #128c7e !important;
+}
+
+.whatsapp-icon {
+  background: rgba(37, 211, 102, 0.1) !important;
+}
+
 .social-links {
   display: flex;
   gap: 20px;

@@ -321,6 +321,28 @@
   margin-bottom: 10px;
 }
 
+.quick-contact a {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.quick-contact a:hover {
+  color: #2563eb;
+}
+
+.whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #25d366 !important;
+  font-weight: 500;
+}
+
+.whatsapp-link:hover {
+  color: #128c7e !important;
+}
+
 .contact-form-side {
   background: white;
   padding: 40px;

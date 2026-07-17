@@ -1,4 +1,5 @@
 import React from 'react';
+import Seo from '../components/Seo';
 import './Services.css';
 
 const Services = () => {
@@ -85,6 +86,12 @@ const Services = () => {
 
   return (
     <div className="services-page">
+      <Seo
+        title="Web Development Services"
+        description="MAKDEVS services: custom web development, mobile apps, cloud solutions, AI & machine learning, cybersecurity, and data analytics."
+        keywords="web development services, mobile app development, cloud solutions, AI development, software services"
+        path="/services"
+      />
       <section className="services-hero">
         <div className="container">
           <h1 className="services-title">Our Services</h1>

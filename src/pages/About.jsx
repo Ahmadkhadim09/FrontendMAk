@@ -1,9 +1,16 @@
 import React from 'react';
+import Seo from '../components/Seo';
 import './About.css';
 
 const About = () => {
   return (
     <div className="about-page">
+      <Seo
+        title="About Us"
+        description="Learn about MAKDEVS — a passionate team of developers and designers building custom web applications, mobile apps, and software solutions worldwide."
+        keywords="about MAKDEVS, software development team, web development company"
+        path="/about"
+      />
       <section className="about-hero">
         <div className="container">
           <h1 className="about-title">About MAKDEVS</h1>
