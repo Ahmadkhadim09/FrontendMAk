@@ -11,7 +11,7 @@ const Portfolio = () => {
       title: 'E-Commerce Platform',
       category: 'web',
       image: 'https://via.placeholder.com/600x400',
-      description: 'A full-featured e-commerce platform with real-time inventory, payment processing, and admin dashboard.',
+      description: 'A full-featured e-commerce platform with real-time inventory, payment processing, and management tools.',
       technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
       link: '#'
     },
